@@ -80,11 +80,11 @@ AiPlayerbot.Enabled = 1
 AiPlayerbot.RandomBotAutologin = 1
 
 # Random bot account
-AiPlayerbot.RandomBotAccountCount = 200
+AiPlayerbot.RandomBotAccountCount = 70
 
 # Random bot count
-AiPlayerbot.MinRandomBots = 50
-AiPlayerbot.MaxRandomBots = 50
+AiPlayerbot.MinRandomBots = 80
+AiPlayerbot.MaxRandomBots = 80
 
 # Delete all random bot accounts (reset randombots)
 AiPlayerbot.DeleteRandomBotAccounts = 0
@@ -447,7 +447,7 @@ AiPlayerbot.OpenGoSpell = 6477
 AiPlayerbot.RandomBotRandomPassword = 0
 
 # Accounts to create for random bots
-AiPlayerbot.RandomBotAccountPrefix = "rndbot"
+AiPlayerbot.RandomBotAccountPrefix = "SLX"
 
 # Enable/Disable rotation of bots (randomly select a bot from the bots pool to go online and rotate them periodically)
 # Need to reset rndbot after changing the setting (.playerbot rndbot reset)
@@ -457,7 +457,7 @@ AiPlayerbot.EnableRotation = 0
 # Bots pool size for rotation (should be less than RandomBotAccountCount * 10)
 AiPlayerbot.RotationPoolSize = 500
 
-AiPlayerbot.RandomBotMinLevel = 1
+AiPlayerbot.RandomBotMinLevel = 80
 AiPlayerbot.RandomBotMaxLevel = 80
 
 # Sync max random bot level with max level of online players
@@ -658,7 +658,7 @@ AiPlayerbot.AutoTeleportForLevel = 1
 AiPlayerbot.RandomBotJoinBG = 1
 
 # Enable Auto join BG - bots randomly join WSG and 2v2 Arena if server is not lagging
-AiPlayerbot.RandomBotAutoJoinBG = 0
+AiPlayerbot.RandomBotAutoJoinBG = 1
 
 # Required for RandomBotAutoJoinBG
 # Currently you can select 1 bracket (level range) for bots to auto join.
@@ -669,9 +669,9 @@ AiPlayerbot.RandomBotAutoJoinBG = 0
 AiPlayerbot.RandomBotAutoJoinWarsongBracket = 7
 AiPlayerbot.RandomBotAutoJoinArenaBracket = 14
 AiPlayerbot.RandomBotAutoJoinBGWarsongCount = 0
-AiPlayerbot.RandomBotAutoJoinBGRatedArena2v2Count = 0
-AiPlayerbot.RandomBotAutoJoinBGRatedArena3v3Count = 0
-AiPlayerbot.RandomBotAutoJoinBGRatedArena5v5Count = 0
+AiPlayerbot.RandomBotAutoJoinBGRatedArena2v2Count = 1
+AiPlayerbot.RandomBotAutoJoinBGRatedArena3v3Count = 1
+AiPlayerbot.RandomBotAutoJoinBGRatedArena5v5Count = 1
 
 # Random bot arena team count
 # Teams are created when bots are initialized on server restart.
@@ -1310,66 +1310,66 @@ AiPlayerbot.RandomBotSayWithoutMaster = 0
 #
 # setting channel broadcast chance to 0, will re-route most broadcasts to other available channels
 # setting all channel broadcasts to 0 will disable most broadcasts
-# AiPlayerbot.BroadcastToGuildGlobalChance = 30000
-# AiPlayerbot.BroadcastToWorldGlobalChance = 30000
-# AiPlayerbot.BroadcastToGeneralGlobalChance = 30000
-# AiPlayerbot.BroadcastToTradeGlobalChance = 30000
-# AiPlayerbot.BroadcastToLFGGlobalChance = 30000
-# AiPlayerbot.BroadcastToLocalDefenseGlobalChance = 30000
-# AiPlayerbot.BroadcastToWorldDefenseGlobalChance = 30000
-# AiPlayerbot.BroadcastToGuildRecruitmentGlobalChance = 30000
+AiPlayerbot.BroadcastToGuildGlobalChance = 30000
+AiPlayerbot.BroadcastToWorldGlobalChance = 30000
+AiPlayerbot.BroadcastToGeneralGlobalChance = 30000
+AiPlayerbot.BroadcastToTradeGlobalChance = 30000
+AiPlayerbot.BroadcastToLFGGlobalChance = 30000
+AiPlayerbot.BroadcastToLocalDefenseGlobalChance = 30000
+AiPlayerbot.BroadcastToWorldDefenseGlobalChance = 30000
+AiPlayerbot.BroadcastToGuildRecruitmentGlobalChance = 30000
 #
 # individual settings
 # setting one of these to 0 will disable the particular broadcast
-# AiPlayerbot.BroadcastChanceLootingItemPoor = 30
-# AiPlayerbot.BroadcastChanceLootingItemNormal = 150
-# AiPlayerbot.BroadcastChanceLootingItemUncommon = 10000
-# AiPlayerbot.BroadcastChanceLootingItemRare = 20000
-# AiPlayerbot.BroadcastChanceLootingItemEpic = 30000
-# AiPlayerbot.BroadcastChanceLootingItemLegendary = 30000
-# AiPlayerbot.BroadcastChanceLootingItemArtifact = 30000
+AiPlayerbot.BroadcastChanceLootingItemPoor = 30
+AiPlayerbot.BroadcastChanceLootingItemNormal = 150
+AiPlayerbot.BroadcastChanceLootingItemUncommon = 10000
+AiPlayerbot.BroadcastChanceLootingItemRare = 20000
+AiPlayerbot.BroadcastChanceLootingItemEpic = 30000
+AiPlayerbot.BroadcastChanceLootingItemLegendary = 30000
+AiPlayerbot.BroadcastChanceLootingItemArtifact = 30000
 #
-# AiPlayerbot.BroadcastChanceQuestAccepted = 6000
-# AiPlayerbot.BroadcastChanceQuestUpdateObjectiveCompleted = 300
-# AiPlayerbot.BroadcastChanceQuestUpdateObjectiveProgress = 300
-# AiPlayerbot.BroadcastChanceQuestUpdateFailedTimer = 300
-# AiPlayerbot.BroadcastChanceQuestUpdateComplete = 1000
-# AiPlayerbot.BroadcastChanceQuestTurnedIn = 10000
+AiPlayerbot.BroadcastChanceQuestAccepted = 6000
+AiPlayerbot.BroadcastChanceQuestUpdateObjectiveCompleted = 300
+AiPlayerbot.BroadcastChanceQuestUpdateObjectiveProgress = 300
+AiPlayerbot.BroadcastChanceQuestUpdateFailedTimer = 300
+AiPlayerbot.BroadcastChanceQuestUpdateComplete = 1000
+AiPlayerbot.BroadcastChanceQuestTurnedIn = 10000
 #
-# AiPlayerbot.BroadcastChanceKillNormal = 30
-# AiPlayerbot.BroadcastChanceKillElite = 300
-# AiPlayerbot.BroadcastChanceKillRareelite = 3000
-# AiPlayerbot.BroadcastChanceKillWorldboss = 20000
-# AiPlayerbot.BroadcastChanceKillRare = 10000
-# AiPlayerbot.BroadcastChanceKillUnknown = 100
-# AiPlayerbot.BroadcastChanceKillPet = 10
-# AiPlayerbot.BroadcastChanceKillPlayer = 30
+AiPlayerbot.BroadcastChanceKillNormal = 30
+AiPlayerbot.BroadcastChanceKillElite = 300
+AiPlayerbot.BroadcastChanceKillRareelite = 3000
+AiPlayerbot.BroadcastChanceKillWorldboss = 20000
+AiPlayerbot.BroadcastChanceKillRare = 10000
+AiPlayerbot.BroadcastChanceKillUnknown = 100
+AiPlayerbot.BroadcastChanceKillPet = 10
+AiPlayerbot.BroadcastChanceKillPlayer = 30
 #
-# AiPlayerbot.BroadcastChanceLevelupGeneric = 20000
-# AiPlayerbot.BroadcastChanceLevelupTenX = 30000
-# AiPlayerbot.BroadcastChanceLevelupMaxLevel = 30000
+AiPlayerbot.BroadcastChanceLevelupGeneric = 20000
+AiPlayerbot.BroadcastChanceLevelupTenX = 30000
+AiPlayerbot.BroadcastChanceLevelupMaxLevel = 30000
 #
-# AiPlayerbot.BroadcastChanceSuggestInstance = 5000
-# AiPlayerbot.BroadcastChanceSuggestQuest = 10000
-# AiPlayerbot.BroadcastChanceSuggestGrindMaterials = 5000
-# AiPlayerbot.BroadcastChanceSuggestGrindReputation = 5000
-# AiPlayerbot.BroadcastChanceSuggestSell = 300
-# AiPlayerbot.BroadcastChanceSuggestSomething = 30000
+AiPlayerbot.BroadcastChanceSuggestInstance = 5000
+AiPlayerbot.BroadcastChanceSuggestQuest = 10000
+AiPlayerbot.BroadcastChanceSuggestGrindMaterials = 5000
+AiPlayerbot.BroadcastChanceSuggestGrindReputation = 5000
+AiPlayerbot.BroadcastChanceSuggestSell = 300
+AiPlayerbot.BroadcastChanceSuggestSomething = 30000
 #
 # Very rude speeches
-# AiPlayerbot.BroadcastChanceSuggestSomethingToxic = 0
+AiPlayerbot.BroadcastChanceSuggestSomethingToxic = 0
 #
 # Specifically for "<word> [item link]"
-# AiPlayerbot.BroadcastChanceSuggestToxicLinks = 0
+AiPlayerbot.BroadcastChanceSuggestToxicLinks = 0
 #
 # prefix is used as a word in "<word> [item link]"
-# AiPlayerbot.ToxicLinksPrefix = gnomes
+AiPlayerbot.ToxicLinksPrefix = gnomes
 #
 # chance to suggest thunderfury
-# AiPlayerbot.BroadcastChanceSuggestThunderfury = 1
+AiPlayerbot.BroadcastChanceSuggestThunderfury = 1
 #
 # does not depend on global chance
-# AiPlayerbot.BroadcastChanceGuildManagement = 30000
+AiPlayerbot.BroadcastChanceGuildManagement = 30000
 #
 ####################################################################################################
 
