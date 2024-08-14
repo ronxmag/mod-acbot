@@ -271,6 +271,9 @@ AiPlayerbot.DispelAuraDuration = 700
 # Delay between two bot actions
 AiPlayerbot.ReactDelay = 100
 
+# Dynamically adjust react delay for bots in different status to reduce server lags
+AiPlayerbot.DynamicReactDelay = 1
+
 # Inactivity delay
 AiPlayerbot.PassiveDelay = 10000
 
@@ -1273,7 +1276,7 @@ AiPlayerbot.CommandPrefix = ""
 AiPlayerbot.CommandSeparator = "\\\\"
 
 # Enable playerbot talk (say / yell / general chatting / lfg)
-AiPlayerbot.RandomBotTalk = 0
+AiPlayerbot.RandomBotTalk = 1
 # Enable playerbot emote
 AiPlayerbot.RandomBotEmote = 0
 # Enable dungeon suggestions for random bots
@@ -1301,7 +1304,7 @@ AiPlayerbot.RandomBotSayWithoutMaster = 0
 # Broadcast rates
 #
 # 1 - to enable broadcasts globally, 0 - to disable (default 1)
-# AiPlayerbot.EnableBroadcasts = 1
+AiPlayerbot.EnableBroadcasts = 1
 #
 # all broadcast chances should be in range 0-30000
 #

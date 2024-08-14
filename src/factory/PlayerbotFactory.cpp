@@ -411,10 +411,10 @@ void PlayerbotFactory::Randomize(bool incremental)
 void PlayerbotFactory::Refresh()
 {
     // Prepare();
-    if (!sPlayerbotAIConfig->equipmentPersistence || bot->GetLevel() < sPlayerbotAIConfig->equipmentPersistenceLevel)
-    {
-        InitEquipment(true);
-    }
+    // if (!sPlayerbotAIConfig->equipmentPersistence || bot->GetLevel() < sPlayerbotAIConfig->equipmentPersistenceLevel)
+    // {
+    //     InitEquipment(true);
+    // }
     ClearInventory();
     InitAmmo();
     InitFood();
