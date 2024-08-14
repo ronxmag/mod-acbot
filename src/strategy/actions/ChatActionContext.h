@@ -169,8 +169,6 @@ public:
         creators["guild remove"] = &ChatActionContext::guild_remove;
         creators["guild leave"] = &ChatActionContext::guild_leave;
         creators["rtsc"] = &ChatActionContext::rtsc;
-        creators["naxx chat shortcut"] = &ChatActionContext::naxx_chat_shortcut;
-        creators["bwl chat shortcut"] = &ChatActionContext::bwl_chat_shortcut;
         creators["tell expected dps"] = &ChatActionContext::tell_expected_dps;
         creators["join"] = &ChatActionContext::join;
         creators["calc"] = &ChatActionContext::calc;
