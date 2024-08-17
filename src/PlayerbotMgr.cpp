@@ -26,7 +26,6 @@
 #include "Playerbots.h"
 #include "SharedDefines.h"
 #include "WorldSession.h"
-#include "ChannelMgr.h"
 #include "BroadcastHelper.h"
 
 PlayerbotHolder::PlayerbotHolder() : PlayerbotAIBase(false) {}
