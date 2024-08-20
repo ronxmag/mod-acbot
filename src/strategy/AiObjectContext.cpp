@@ -30,6 +30,9 @@ AiObjectContext::AiObjectContext(PlayerbotAI* botAI) : PlayerbotAIAware(botAI)
     triggerContexts.Add(new TriggerContext());
     triggerContexts.Add(new ChatTriggerContext());
     triggerContexts.Add(new WorldPacketTriggerContext());
+    triggerContexts.Add(new RaidTriggerContext());
+    triggerContexts.Add(new RaidNaxxTriggerContext());
+    triggerContexts.Add(new RaidUlduarTriggerContext());
 
     valueContexts.Add(new ValueContext());
 
