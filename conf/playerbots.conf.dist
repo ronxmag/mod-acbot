@@ -411,7 +411,7 @@ AiPlayerbot.AutoGearCommand = 1
 
 # Equips quality limitation for auto gear command (1 = normal, 2 = uncommon, 3 = rare, 4 = epic, 5 = legendary)
 # default: 3 (rare)
-AiPlayerbot.AutoGearQualityLimit = 3
+AiPlayerbot.AutoGearQualityLimit = 4
 
 # Equips gear score limitation for auto gear command (0 = no limit)
 # default: 0 (no limit)
@@ -519,7 +519,7 @@ AiPlayerbot.DowngradeMaxLevelBot = 0
 
 # Equips quality limitation for random bots (1 = normal, 2 = uncommon, 3 = rare, 4 = epic, 5 = legendary)
 # default: 3 (rare)
-AiPlayerbot.RandomGearQualityLimit = 3
+AiPlayerbot.RandomGearQualityLimit = 4
 
 # Equips gear score limitation for random bots (0 = no limit)
 # default: 0 (no limit)
