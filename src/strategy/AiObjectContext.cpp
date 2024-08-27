@@ -9,12 +9,21 @@
 #include "ChatActionContext.h"
 #include "ChatTriggerContext.h"
 #include "Playerbots.h"
+#include "RaidUlduarTriggerContext.h"
+#include "RaidUlduarActionContext.h"
 #include "SharedValueContext.h"
 #include "StrategyContext.h"
 #include "TriggerContext.h"
 #include "ValueContext.h"
 #include "WorldPacketActionContext.h"
 #include "WorldPacketTriggerContext.h"
+#include "raids/RaidActionContext.h"
+#include "raids/RaidStrategyContext.h"
+#include "raids/RaidTriggerContext.h"
+#include "raids/naxxramas/RaidNaxxActionContext.h"
+#include "raids/naxxramas/RaidNaxxTriggerContext.h"
+#include "raids/moltencore/RaidMcActionContext.h"
+#include "raids/moltencore/RaidMcTriggerContext.h"
 
 AiObjectContext::AiObjectContext(PlayerbotAI* botAI) : PlayerbotAIAware(botAI)
 {
@@ -22,14 +31,23 @@ AiObjectContext::AiObjectContext(PlayerbotAI* botAI) : PlayerbotAIAware(botAI)
     strategyContexts.Add(new MovementStrategyContext());
     strategyContexts.Add(new AssistStrategyContext());
     strategyContexts.Add(new QuestStrategyContext());
+    strategyContexts.Add(new RaidStrategyContext());
 
     actionContexts.Add(new ActionContext());
     actionContexts.Add(new ChatActionContext());
     actionContexts.Add(new WorldPacketActionContext());
+    actionContexts.Add(new RaidActionContext());
+    actionContexts.Add(new RaidNaxxActionContext());
+    actionContexts.Add(new RaidUlduarActionContext());
+    actionContexts.Add(new RaidMcActionContext());
 
     triggerContexts.Add(new TriggerContext());
     triggerContexts.Add(new ChatTriggerContext());
     triggerContexts.Add(new WorldPacketTriggerContext());
+    triggerContexts.Add(new RaidTriggerContext());
+    triggerContexts.Add(new RaidNaxxTriggerContext());
+    triggerContexts.Add(new RaidUlduarTriggerContext());
+    triggerContexts.Add(new RaidMcTriggerContext());
 
     valueContexts.Add(new ValueContext());
 
