@@ -272,7 +272,7 @@ private:
     static Action* rtsc(PlayerbotAI* botAI) { return new RTSCAction(botAI); }
     static Action* naxx_chat_shortcut(PlayerbotAI* ai) { return new NaxxChatShortcutAction(ai); }
     static Action* bwl_chat_shortcut(PlayerbotAI* ai) { return new BwlChatShortcutAction(ai); }
-    static Action* tell_expected_dps(PlayerbotAI* ai) { return new TellExpectedDpsAction(ai); }
+    static Action* tell_estimated_dps(PlayerbotAI* ai) { return new TellEstimatedDpsAction(ai); }
     static Action* join(PlayerbotAI* ai) { return new JoinGroupAction(ai); }
     static Action* calc(PlayerbotAI* ai) { return new TellCalculateItemAction(ai); }
 };
