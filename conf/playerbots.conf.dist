@@ -81,7 +81,7 @@ AiPlayerbot.RandomBotAutologin = 1
 
 # Random bot account
 # Please ensure that RandomBotAccountCount is greater than (MaxRandomBots / 10 + AddClassAccountPoolSize)
-AiPlayerbot.RandomBotAccountCount = 200
+AiPlayerbot.RandomBotAccountCount = 70
 
 # Random bot count
 AiPlayerbot.MinRandomBots = 80
