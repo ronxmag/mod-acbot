@@ -14,6 +14,7 @@
 #include "Playerbots.h"
 #include "SharedDefines.h"
 #include "TemporarySummon.h"
+#include "ThreatMgr.h"
 #include "Timer.h"
 
 bool LowManaTrigger::IsActive()
@@ -151,7 +152,16 @@ bool OutNumberedTrigger::IsActive()
 bool BuffTrigger::IsActive()
 {
     Unit* target = GetTarget();
-    return SpellTrigger::IsActive() && !botAI->HasAura(spell, target, false, checkIsOwner);
+    if (!target)
+        return false;
+    if (!SpellTrigger::IsActive())
+        return false;
+    Aura* aura = botAI->GetAura(spell, target, checkIsOwner, checkDuration);
+    if (!aura)
+        return true;
+    if (beforeDuration && aura->GetDuration() < beforeDuration)
+        return true;
+    return false;
 }
 
 Value<Unit*>* BuffOnPartyTrigger::GetTargetValue()
@@ -183,6 +193,22 @@ bool NoTargetTrigger::IsActive() { return !AI_VALUE(Unit*, "current target"); }
 bool MyAttackerCountTrigger::IsActive()
 {
     return AI_VALUE2(bool, "combat", "self target") && AI_VALUE(uint8, "my attacker count") >= amount;
+}
+
+bool LowTankThreatTrigger::IsActive()
+{
+    Unit* mt = AI_VALUE(Unit*, "main tank");
+    if (!mt)
+        return false;
+
+    Unit* current_target = AI_VALUE(Unit*, "current target");
+    if (!current_target)
+        return false;
+
+    ThreatMgr& mgr = current_target->GetThreatMgr();
+    float threat = mgr.GetThreat(bot);
+    float tankThreat = mgr.GetThreat(mt);
+    return tankThreat == 0.0f || threat > tankThreat * 0.5f;
 }
 
 bool AoeTrigger::IsActive()

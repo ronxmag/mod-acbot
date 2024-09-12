@@ -216,6 +216,9 @@ AiPlayerbot.AutoEquipUpgradeLoot = 1
 # Default: 1.1 (Equip when the equipment score is 1.1 times higher than the current)
 AiPlayerbot.EquipUpgradeThreshold = 1.1
 
+# Two rounds of equipment initialization to create more suitable gear
+AiPlayerbot.TwoRoundsGearInit = 0
+
 #
 #
 #
@@ -354,7 +357,7 @@ AiPlayerbot.HighMana = 65
 #
 #
 
-# Bots pick their quest reward (yes = picks first useful item, no = list all rewards, ask = pick useful item and lists if multiple)
+# Bots pick their quest reward (yes = picks the most useful item, no = list all rewards, ask = pick useful item and lists if multiple)
 AiPlayerbot.AutoPickReward = yes
 
 # Sync quests with player (Bots will complete quests the moment you hand them in. Bots will ignore looting quest items.)
@@ -382,9 +385,11 @@ AiPlayerbot.ApplyInstanceStrategies = 1
 # Default: 1 (enable)
 AiPlayerbot.AutoAvoidAoe = 1
 
-# Tell which spell is avoiding (experimental)
-# Default: 1 (enable)
-AiPlayerbot.TellWhenAvoidAoe = 1
+# Only avoid aoe spells with a radius smaller than this value
+AiPlayerbot.MaxAoeAvoidRadius = 15.0
+
+# A whitelist of aoe spell IDs that should not be avoided
+AiPlayerbot.AoeAvoidSpellWhitelist = 50759,57491,13810
 
 # Enable healer bot save mana
 # Default: 1 (enable)
@@ -723,14 +728,14 @@ AiPlayerbot.FastReactInBG = 1
 #
 
 # All In seconds
-AiPlayerbot.RandomBotUpdateInterval = 20
+AiPlayerbot.RandomBotUpdateInterval = 1
 AiPlayerbot.RandomBotCountChangeMinInterval = 1800
 AiPlayerbot.RandomBotCountChangeMaxInterval = 7200
 AiPlayerbot.MinRandomBotInWorldTime = 3600
-AiPlayerbot.MaxRandomBotInWorldTime = 43200
-AiPlayerbot.MinRandomBotRandomizeTime = 302400
+AiPlayerbot.MaxRandomBotInWorldTime = 1209600
+AiPlayerbot.MinRandomBotRandomizeTime = 7200
 AiPlayerbot.MaxRandomBotRandomizeTime = 1209600
-AiPlayerbot.RandomBotsPerInterval = 500
+AiPlayerbot.RandomBotsPerInterval = 60
 AiPlayerbot.MinRandomBotReviveTime = 60
 AiPlayerbot.MaxRandomBotReviveTime = 300
 AiPlayerbot.MinRandomBotTeleportInterval = 3600
@@ -771,12 +776,12 @@ AiPlayerbot.RandomBotInWorldWithRotationDisabled = 31104000
 
 AiPlayerbot.PremadeSpecName.1.0 = arms pve
 AiPlayerbot.PremadeSpecGlyph.1.0 = 43418,43395,43423,43399,49084,43421
-AiPlayerbot.PremadeSpecLink.1.0.60 = 3022032023335100202012013031241
-AiPlayerbot.PremadeSpecLink.1.0.80 = 3022032123335100202012013031251-32505010002
+AiPlayerbot.PremadeSpecLink.1.0.60 = 3022032023335100002012211231241
+AiPlayerbot.PremadeSpecLink.1.0.80 = 3022032023335100102012213231251-305-2033
 AiPlayerbot.PremadeSpecName.1.1 = fury pve
 AiPlayerbot.PremadeSpecGlyph.1.1 = 43418,43395,43414,43399,49084,43432
 AiPlayerbot.PremadeSpecLink.1.1.60 = -305053000500310053120501351
-AiPlayerbot.PremadeSpecLink.1.1.80 = 30202300233-305053000500310153120511351
+AiPlayerbot.PremadeSpecLink.1.1.80 = 32002300233-305053000500310153120511351
 AiPlayerbot.PremadeSpecName.1.2 = prot pve
 AiPlayerbot.PremadeSpecGlyph.1.2 = 43424,43395,43425,43399,49084,45793
 AiPlayerbot.PremadeSpecLink.1.2.60 = --053351225000210521030113321
@@ -797,7 +802,7 @@ AiPlayerbot.PremadeSpecGlyph.2.0 = 41106,43367,45741,43369,43365,41109
 AiPlayerbot.PremadeSpecLink.2.0.60 = 50350151020013053100515221
 AiPlayerbot.PremadeSpecLink.2.0.80 = 50350152220013053100515221-503201312
 AiPlayerbot.PremadeSpecName.2.1 = prot pve
-AiPlayerbot.PremadeSpecGlyph.2.1 = 41100,43367,43869,43369,43365,45745
+AiPlayerbot.PremadeSpecGlyph.2.1 = 41099,43367,43869,43369,43365,45745
 AiPlayerbot.PremadeSpecLink.2.1.60 = -05005135203102311333112321
 AiPlayerbot.PremadeSpecLink.2.1.80 = -05005135203102311333312321-502302012003
 AiPlayerbot.PremadeSpecName.2.2 = ret pve
@@ -821,13 +826,25 @@ AiPlayerbot.PremadeSpecGlyph.3.0 = 42912,43350,42902,43351,43338,45732
 AiPlayerbot.PremadeSpecLink.3.0.60 = 51200201505112243100511351
 AiPlayerbot.PremadeSpecLink.3.0.80 = 51200201505112253100531351-015305021
 AiPlayerbot.PremadeSpecName.3.1 = mm pve
-AiPlayerbot.PremadeSpecGlyph.3.1 = 42912,43350,42915,43351,43338,45732
-AiPlayerbot.PremadeSpecLink.3.1.60 = -015305101230013233135030051
-AiPlayerbot.PremadeSpecLink.3.1.80 = 502-035305101230013233135031351-5000002
+AiPlayerbot.PremadeSpecGlyph.3.1 = 42912,43350,42914,43351,43338,45732
+AiPlayerbot.PremadeSpecLink.3.1.60 = -025315101030013233125031051
+AiPlayerbot.PremadeSpecLink.3.1.80 = 502-025335101030013233135031351-5000002
 AiPlayerbot.PremadeSpecName.3.2 = surv pve
 AiPlayerbot.PremadeSpecGlyph.3.2 = 42912,43350,45731,43351,43338,45732
-AiPlayerbot.PremadeSpecLink.3.2.60 = --5000032500033330502135001331
-AiPlayerbot.PremadeSpecLink.3.2.80 = -005305101-5000032500033330522135301331
+AiPlayerbot.PremadeSpecLink.3.2.60 = --5000032500033330502135201311
+AiPlayerbot.PremadeSpecLink.3.2.80 = -005305101-5000032500033330532135301321
+
+# HUNTER PET
+#
+# Ferocity
+AiPlayerbot.PremadeHunterPetLink.0.16 = 2100003030103010101
+AiPlayerbot.PremadeHunterPetLink.0.20 = 2100013030103010122
+# Tenacity
+AiPlayerbot.PremadeHunterPetLink.1.16 = 21103000300120101001
+AiPlayerbot.PremadeHunterPetLink.1.20 = 21303010300120101002
+# Cunning
+AiPlayerbot.PremadeHunterPetLink.2.16 = 2100020330000211001
+AiPlayerbot.PremadeHunterPetLink.2.20 = 21000203300002110221
 
 #
 #
@@ -895,8 +912,8 @@ AiPlayerbot.PremadeSpecLink.6.1.60 = -32003350332203012300023101351
 AiPlayerbot.PremadeSpecLink.6.1.80 = -32002350352203012300033101351-230200305003
 AiPlayerbot.PremadeSpecName.6.2 = unholy pve
 AiPlayerbot.PremadeSpecGlyph.6.2 = 43542,43673,45804,43544,43672,43549
-AiPlayerbot.PremadeSpecLink.6.2.60 = --2300303050032152000150213130051
-AiPlayerbot.PremadeSpecLink.6.2.80 = -320053500002-2300303050032152000150213130051
+AiPlayerbot.PremadeSpecLink.6.2.60 = --2301303050032151000150013131151
+AiPlayerbot.PremadeSpecLink.6.2.80 = -320033500002-2301303050032151000150013133151
 AiPlayerbot.PremadeSpecName.6.3 = double aura blood pve
 AiPlayerbot.PremadeSpecGlyph.6.3 = 45805,43673,43827,43544,43672,43554
 AiPlayerbot.PremadeSpecLink.6.3.60 = 005512153330030320102013-305
@@ -965,7 +982,7 @@ AiPlayerbot.PremadeSpecLink.9.0.70 = 2350022001113510053500131151--55
 AiPlayerbot.PremadeSpecLink.9.0.80 = 2350022001113510253500331151--5500000501
 AiPlayerbot.PremadeSpecName.9.1 = emo pve
 AiPlayerbot.PremadeSpecGlyph.9.1 = 45785,43390,50077,43394,43393,42459
-AiPlayerbot.PremadeSpecLink.9.1.60 = -003203301135112530131201-55
+AiPlayerbot.PremadeSpecLink.9.1.60 = -003203301135112530135201051
 AiPlayerbot.PremadeSpecLink.9.1.70 = -003203301135112530135201051-55
 AiPlayerbot.PremadeSpecLink.9.1.80 = -003203301135112530135221351-55000005
 AiPlayerbot.PremadeSpecName.9.2 = destro pve
@@ -1165,11 +1182,11 @@ AiPlayerbot.RandomClassSpecIndex.8.2 = 2
 #
 #
 
-AiPlayerbot.RandomClassSpecProb.9.0 = 40
+AiPlayerbot.RandomClassSpecProb.9.0 = 45
 AiPlayerbot.RandomClassSpecIndex.9.0 = 0
-AiPlayerbot.RandomClassSpecProb.9.1 = 40
+AiPlayerbot.RandomClassSpecProb.9.1 = 45
 AiPlayerbot.RandomClassSpecIndex.9.1 = 1
-AiPlayerbot.RandomClassSpecProb.9.2 = 20
+AiPlayerbot.RandomClassSpecProb.9.2 = 10
 AiPlayerbot.RandomClassSpecIndex.9.2 = 2
 
 #
@@ -1265,6 +1282,10 @@ AiPlayerbot.SpellDump = 0
 AiPlayerbot.LogInGroupOnly = 1
 AiPlayerbot.LogValuesPerTick = 0
 AiPlayerbot.RandomChangeMultiplier = 1
+
+# Tell which spell is avoiding (experimental)
+# Default: 0 (disable)
+AiPlayerbot.TellWhenAvoidAoe = 0
 
 # Enables/Disables performance monitor
 AiPlayerbot.PerfMonEnabled = 0

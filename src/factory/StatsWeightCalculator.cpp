@@ -27,10 +27,19 @@ StatsWeightCalculator::StatsWeightCalculator(Player* player) : player_(player)
         type_ = CollectorType::MELEE;
     else
         type_ = CollectorType::RANGED;
-    collector_ = std::make_unique<StatsCollector>(type_);
-
     cls = player->getClass();
     tab = AiFactory::GetPlayerSpecTab(player);
+    collector_ = std::make_unique<StatsCollector>(type_, cls);
+
+
+    if (cls == CLASS_DEATH_KNIGHT && tab == DEATHKNIGHT_TAB_UNHOLY)
+        hitOverflowType_ = CollectorType::SPELL;
+    else if (cls == CLASS_SHAMAN && tab == SHAMAN_TAB_ENHANCEMENT)
+        hitOverflowType_ = CollectorType::SPELL;
+    else if (cls == CLASS_ROGUE)
+        hitOverflowType_ = CollectorType::SPELL;
+    else
+        hitOverflowType_ = type_;
 
     enable_overflow_penalty_ = true;
     enable_item_set_bonus_ = true;
@@ -57,6 +66,9 @@ float StatsWeightCalculator::CalculateItem(uint32 itemId)
     Reset();
 
     collector_->CollectItemStats(proto);
+
+    if (enable_overflow_penalty_)
+        ApplyOverflowPenalty(player_);
 
     GenerateWeights(player_);
     for (uint32 i = 0; i < STATS_TYPE_MAX; i++)
@@ -89,6 +101,9 @@ float StatsWeightCalculator::CalculateEnchant(uint32 enchantId)
 
     collector_->CollectEnchantStats(enchant);
 
+    if (enable_overflow_penalty_)
+        ApplyOverflowPenalty(player_);
+
     GenerateWeights(player_);
     for (uint32 i = 0; i < STATS_TYPE_MAX; i++)
     {
@@ -102,9 +117,7 @@ void StatsWeightCalculator::GenerateWeights(Player* player)
 {
     GenerateBasicWeights(player);
     GenerateAdditionalWeights(player);
-
-    if (enable_overflow_penalty_)
-        ApplyOverflowPenalty(player);
+    ApplyWeightFinetune(player);
 }
 
 void StatsWeightCalculator::GenerateBasicWeights(Player* player)
@@ -115,58 +128,58 @@ void StatsWeightCalculator::GenerateBasicWeights(Player* player)
 
     if (cls == CLASS_HUNTER && (tab == HUNTER_TAB_BEASTMASTER || tab == HUNTER_TAB_SURVIVAL))
     {
-        stats_weights_[STATS_TYPE_AGILITY] += 2.4f;
+        stats_weights_[STATS_TYPE_AGILITY] += 2.5f;
         stats_weights_[STATS_TYPE_ATTACK_POWER] += 1.0f;
-        stats_weights_[STATS_TYPE_ARMOR_PENETRATION] += 1.3f;
-        stats_weights_[STATS_TYPE_HIT] += 1.6f;
-        stats_weights_[STATS_TYPE_CRIT] += 1.5f;
-        stats_weights_[STATS_TYPE_HASTE] += 1.4f;
-        stats_weights_[STATS_TYPE_RANGED_DPS] += 5.0f;
+        stats_weights_[STATS_TYPE_ARMOR_PENETRATION] += 1.5f;
+        stats_weights_[STATS_TYPE_HIT] += 1.7f;
+        stats_weights_[STATS_TYPE_CRIT] += 1.4f;
+        stats_weights_[STATS_TYPE_HASTE] += 1.6f;
+        stats_weights_[STATS_TYPE_RANGED_DPS] += 7.5f;
     }
     else if (cls == CLASS_HUNTER && tab == HUNTER_TAB_MARKSMANSHIP)
     {
-        stats_weights_[STATS_TYPE_AGILITY] += 2.2f;
+        stats_weights_[STATS_TYPE_AGILITY] += 2.3f;
         stats_weights_[STATS_TYPE_ATTACK_POWER] += 1.0f;
-        stats_weights_[STATS_TYPE_ARMOR_PENETRATION] += 2.2f;
+        stats_weights_[STATS_TYPE_ARMOR_PENETRATION] += 2.25f;
         stats_weights_[STATS_TYPE_HIT] += 2.1f;
         stats_weights_[STATS_TYPE_CRIT] += 2.0f;
         stats_weights_[STATS_TYPE_HASTE] += 1.8f;
-        stats_weights_[STATS_TYPE_RANGED_DPS] += 5.0f;
+        stats_weights_[STATS_TYPE_RANGED_DPS] += 10.0f;
     }
     else if (cls == CLASS_ROGUE && tab == ROGUE_TAB_COMBAT)
     {
-        stats_weights_[STATS_TYPE_AGILITY] += 1.8f;
+        stats_weights_[STATS_TYPE_AGILITY] += 1.9f;
         stats_weights_[STATS_TYPE_STRENGTH] += 1.1f;
         stats_weights_[STATS_TYPE_ATTACK_POWER] += 1.0f;
-        stats_weights_[STATS_TYPE_ARMOR_PENETRATION] += 1.2f;
-        stats_weights_[STATS_TYPE_HIT] += 2.0f;
-        stats_weights_[STATS_TYPE_CRIT] += 1.6f;
-        stats_weights_[STATS_TYPE_HASTE] += 1.4f;
+        stats_weights_[STATS_TYPE_ARMOR_PENETRATION] += 1.8f;
+        stats_weights_[STATS_TYPE_HIT] += 2.1f;
+        stats_weights_[STATS_TYPE_CRIT] += 1.4f;
+        stats_weights_[STATS_TYPE_HASTE] += 1.7f;
         stats_weights_[STATS_TYPE_EXPERTISE] += 2.0f;
-        stats_weights_[STATS_TYPE_MELEE_DPS] += 5.0f;
+        stats_weights_[STATS_TYPE_MELEE_DPS] += 7.0f;
     }
     else if (cls == CLASS_DRUID && tab == DRUID_TAB_FERAL && !PlayerbotAI::IsTank(player))
     {
-        stats_weights_[STATS_TYPE_AGILITY] += 2.4f;
-        stats_weights_[STATS_TYPE_STRENGTH] += 2.3f;
+        stats_weights_[STATS_TYPE_AGILITY] += 2.2f;
+        stats_weights_[STATS_TYPE_STRENGTH] += 2.4f;
         stats_weights_[STATS_TYPE_ATTACK_POWER] += 1.0f;
-        stats_weights_[STATS_TYPE_ARMOR_PENETRATION] += 2.1f;
+        stats_weights_[STATS_TYPE_ARMOR_PENETRATION] += 2.3f;
         stats_weights_[STATS_TYPE_HIT] += 1.9f;
-        stats_weights_[STATS_TYPE_CRIT] += 1.8f;
-        stats_weights_[STATS_TYPE_HASTE] += 1.4f;
-        stats_weights_[STATS_TYPE_EXPERTISE] += 2.0f;
-        stats_weights_[STATS_TYPE_MELEE_DPS] += 5.0f;
+        stats_weights_[STATS_TYPE_CRIT] += 1.5f;
+        stats_weights_[STATS_TYPE_HASTE] += 2.1f;
+        stats_weights_[STATS_TYPE_EXPERTISE] += 2.1f;
+        stats_weights_[STATS_TYPE_MELEE_DPS] += 15.0f;
     }
     else if (cls == CLASS_ROGUE && (tab == ROGUE_TAB_ASSASSINATION || tab == ROGUE_TAB_SUBTLETY))
     {
-        stats_weights_[STATS_TYPE_AGILITY] += 1.7f;
+        stats_weights_[STATS_TYPE_AGILITY] += 1.5f;
         stats_weights_[STATS_TYPE_STRENGTH] += 1.1f;
         stats_weights_[STATS_TYPE_ATTACK_POWER] += 1.0f;
-        stats_weights_[STATS_TYPE_ARMOR_PENETRATION] += 1.0f;
-        stats_weights_[STATS_TYPE_HIT] += 1.6f;
-        stats_weights_[STATS_TYPE_CRIT] += 1.3f;
-        stats_weights_[STATS_TYPE_HASTE] += 1.5f;
-        stats_weights_[STATS_TYPE_EXPERTISE] += 2.0f;
+        stats_weights_[STATS_TYPE_ARMOR_PENETRATION] += 1.2f;
+        stats_weights_[STATS_TYPE_HIT] += 2.1f;
+        stats_weights_[STATS_TYPE_CRIT] += 1.1f;
+        stats_weights_[STATS_TYPE_HASTE] += 1.8f;
+        stats_weights_[STATS_TYPE_EXPERTISE] += 2.1f;
         stats_weights_[STATS_TYPE_MELEE_DPS] += 5.0f;
     }
     else if (cls == CLASS_WARRIOR && tab == WARRIOR_TAB_FURY)  //  fury
@@ -195,69 +208,85 @@ void StatsWeightCalculator::GenerateBasicWeights(Player* player)
     }
     else if (cls == CLASS_DEATH_KNIGHT && tab == DEATHKNIGHT_TAB_FROST)  // frost dk
     {
-        stats_weights_[STATS_TYPE_AGILITY] += 1.8f;
-        stats_weights_[STATS_TYPE_STRENGTH] += 2.6f;
+        stats_weights_[STATS_TYPE_AGILITY] += 1.7f;
+        stats_weights_[STATS_TYPE_STRENGTH] += 2.8f;
         stats_weights_[STATS_TYPE_ATTACK_POWER] += 1.0f;
-        stats_weights_[STATS_TYPE_ARMOR_PENETRATION] += 2.1f;
+        stats_weights_[STATS_TYPE_ARMOR_PENETRATION] += 2.7f;
         stats_weights_[STATS_TYPE_HIT] += 2.3f;
         stats_weights_[STATS_TYPE_CRIT] += 2.2f;
-        stats_weights_[STATS_TYPE_HASTE] += 1.8f;
+        stats_weights_[STATS_TYPE_HASTE] += 2.1f;
         stats_weights_[STATS_TYPE_EXPERTISE] += 2.5f;
         stats_weights_[STATS_TYPE_MELEE_DPS] += 7.0f;
     }
     else if (cls == CLASS_DEATH_KNIGHT && tab == DEATHKNIGHT_TAB_UNHOLY)
     {
-        stats_weights_[STATS_TYPE_AGILITY] += 0.5f;
+        stats_weights_[STATS_TYPE_AGILITY] += 0.9f;
         stats_weights_[STATS_TYPE_STRENGTH] += 2.5f;
         stats_weights_[STATS_TYPE_ATTACK_POWER] += 1.0f;
-        stats_weights_[STATS_TYPE_ARMOR_PENETRATION] += 1.0f;
-        stats_weights_[STATS_TYPE_HIT] += 1.8f;
-        stats_weights_[STATS_TYPE_CRIT] += 1.0f;
-        stats_weights_[STATS_TYPE_HASTE] += 1.7f;
-        stats_weights_[STATS_TYPE_EXPERTISE] += 1.0f;
+        stats_weights_[STATS_TYPE_ARMOR_PENETRATION] += 1.3f;
+        stats_weights_[STATS_TYPE_HIT] += 2.2f;
+        stats_weights_[STATS_TYPE_CRIT] += 1.7f;
+        stats_weights_[STATS_TYPE_HASTE] += 1.8f;
+        stats_weights_[STATS_TYPE_EXPERTISE] += 1.5f;
         stats_weights_[STATS_TYPE_MELEE_DPS] += 5.0f;
     }
     else if (cls == CLASS_PALADIN && tab == PALADIN_TAB_RETRIBUTION)  // retribution
     {
-        stats_weights_[STATS_TYPE_AGILITY] += 1.1f;
+        stats_weights_[STATS_TYPE_AGILITY] += 1.6f;
         stats_weights_[STATS_TYPE_STRENGTH] += 2.5f;
-        stats_weights_[STATS_TYPE_INTELLECT] += 0.15f;
+        stats_weights_[STATS_TYPE_INTELLECT] += 0.1f;
         stats_weights_[STATS_TYPE_ATTACK_POWER] += 1.0f;
         stats_weights_[STATS_TYPE_SPELL_POWER] += 0.3f;
-        stats_weights_[STATS_TYPE_ARMOR_PENETRATION] += 0.5f;
+        stats_weights_[STATS_TYPE_ARMOR_PENETRATION] += 1.5f;
         stats_weights_[STATS_TYPE_HIT] += 1.9f;
-        stats_weights_[STATS_TYPE_CRIT] += 1.2f;
-        stats_weights_[STATS_TYPE_HASTE] += 1.3f;
+        stats_weights_[STATS_TYPE_CRIT] += 1.7f;
+        stats_weights_[STATS_TYPE_HASTE] += 1.6f;
         stats_weights_[STATS_TYPE_EXPERTISE] += 2.0f;
-        stats_weights_[STATS_TYPE_MELEE_DPS] += 7.0f;
+        stats_weights_[STATS_TYPE_MELEE_DPS] += 9.0f;
     }
     else if ((cls == CLASS_SHAMAN && tab == SHAMAN_TAB_ENHANCEMENT))  // enhancement
     {
-        stats_weights_[STATS_TYPE_AGILITY] += 1.6f;
+        stats_weights_[STATS_TYPE_AGILITY] += 1.4f;
         stats_weights_[STATS_TYPE_STRENGTH] += 1.1f;
-        stats_weights_[STATS_TYPE_INTELLECT] += 0.5f;
+        stats_weights_[STATS_TYPE_INTELLECT] += 0.3f;
         stats_weights_[STATS_TYPE_ATTACK_POWER] += 1.0f;
-        stats_weights_[STATS_TYPE_SPELL_POWER] += 0.9f;
-        stats_weights_[STATS_TYPE_ARMOR_PENETRATION] += 1.2f;
-        stats_weights_[STATS_TYPE_HIT] += 1.7f;
-        stats_weights_[STATS_TYPE_CRIT] += 1.4f;
+        stats_weights_[STATS_TYPE_SPELL_POWER] += 0.95f;
+        stats_weights_[STATS_TYPE_ARMOR_PENETRATION] += 0.9f;
+        stats_weights_[STATS_TYPE_HIT] += 2.1f;
+        stats_weights_[STATS_TYPE_CRIT] += 1.5f;
         stats_weights_[STATS_TYPE_HASTE] += 1.8f;
         stats_weights_[STATS_TYPE_EXPERTISE] += 2.0f;
         stats_weights_[STATS_TYPE_MELEE_DPS] += 8.5f;
     }
-    else if (cls == CLASS_WARLOCK || cls == CLASS_MAGE ||
+    else if (cls == CLASS_WARLOCK || (cls == CLASS_MAGE && tab != MAGE_TAB_FIRE) ||
              (cls == CLASS_PRIEST && tab == PRIEST_TAB_SHADOW) ||     // shadow
-             (cls == CLASS_SHAMAN && tab == SHAMAN_TAB_ELEMENTAL) ||  // element
              (cls == CLASS_DRUID && tab == DRUID_TAB_BALANCE))        // balance
     {
-        stats_weights_[STATS_TYPE_INTELLECT] += 0.5f;
-        stats_weights_[STATS_TYPE_SPIRIT] += 0.4f;
+        stats_weights_[STATS_TYPE_INTELLECT] += 0.3f;
+        stats_weights_[STATS_TYPE_SPIRIT] += 0.6f;
         stats_weights_[STATS_TYPE_SPELL_POWER] += 1.0f;
-        stats_weights_[STATS_TYPE_SPELL_PENETRATION] += 1.0f;
         stats_weights_[STATS_TYPE_HIT] += 1.1f;
         stats_weights_[STATS_TYPE_CRIT] += 0.8f;
         stats_weights_[STATS_TYPE_HASTE] += 1.0f;
         stats_weights_[STATS_TYPE_RANGED_DPS] += 1.0f;
+    }
+    else if (cls == CLASS_MAGE && tab == MAGE_TAB_FIRE)
+    {
+        stats_weights_[STATS_TYPE_INTELLECT] += 0.3f;
+        stats_weights_[STATS_TYPE_SPIRIT] += 0.7f;
+        stats_weights_[STATS_TYPE_SPELL_POWER] += 1.0f;
+        stats_weights_[STATS_TYPE_HIT] += 1.2f;
+        stats_weights_[STATS_TYPE_CRIT] += 1.1f;
+        stats_weights_[STATS_TYPE_HASTE] += 0.8f;
+        stats_weights_[STATS_TYPE_RANGED_DPS] += 1.0f;
+    }
+    else if (cls == CLASS_SHAMAN && tab == SHAMAN_TAB_ELEMENTAL)
+    {
+        stats_weights_[STATS_TYPE_INTELLECT] += 0.25f;
+        stats_weights_[STATS_TYPE_SPELL_POWER] += 1.0f;
+        stats_weights_[STATS_TYPE_HIT] += 1.1f;
+        stats_weights_[STATS_TYPE_CRIT] += 0.8f;
+        stats_weights_[STATS_TYPE_HASTE] += 1.0f;
     }
     else if ((cls == CLASS_PALADIN && tab == PALADIN_TAB_HOLY) ||       // holy
              (cls == CLASS_PRIEST && tab != PRIEST_TAB_SHADOW) ||       // discipline / holy
@@ -336,6 +365,8 @@ void StatsWeightCalculator::GenerateAdditionalWeights(Player* player)
     {
         if (player->HasAura(34484))
             stats_weights_[STATS_TYPE_INTELLECT] += 1.1f;
+        if (player->HasAura(56341))
+            stats_weights_[STATS_TYPE_STAMINA] += 0.3f;
     }
     else if (cls == CLASS_WARRIOR)
     {
@@ -414,12 +445,12 @@ void StatsWeightCalculator::CalculateSocketBonus(Player* player, ItemTemplate co
 
 void StatsWeightCalculator::CalculateItemTypePenalty(ItemTemplate const* proto)
 {
-    // penalty for different type armor
-    if (proto->Class == ITEM_CLASS_ARMOR && proto->SubClass >= ITEM_SUBCLASS_ARMOR_CLOTH &&
-        proto->SubClass <= ITEM_SUBCLASS_ARMOR_PLATE && NotBestArmorType(proto->SubClass))
-    {
-        weight_ *= 0.8;
-    }
+    // // penalty for different type armor
+    // if (proto->Class == ITEM_CLASS_ARMOR && proto->SubClass >= ITEM_SUBCLASS_ARMOR_CLOTH &&
+    //     proto->SubClass <= ITEM_SUBCLASS_ARMOR_PLATE && NotBestArmorType(proto->SubClass))
+    // {
+    //     weight_ *= 1.0;
+    // }
     // double hand
     if (proto->Class == ITEM_CLASS_WEAPON)
     {
@@ -444,7 +475,7 @@ void StatsWeightCalculator::CalculateItemTypePenalty(ItemTemplate const* proto)
         }
         // spec with double hand
         // fury without duel wield, arms, bear, retribution, blood dk
-        if (isDoubleHand &&
+        if (!isDoubleHand &&
             ((cls == CLASS_HUNTER && !player_->CanDualWield()) ||
              (cls == CLASS_WARRIOR && tab == WARRIOR_TAB_FURY && !player_->CanDualWield()) ||
              (cls == CLASS_WARRIOR && tab == WARRIOR_TAB_ARMS) || (cls == CLASS_DRUID && tab == DRUID_TAB_FERAL) ||
@@ -452,13 +483,13 @@ void StatsWeightCalculator::CalculateItemTypePenalty(ItemTemplate const* proto)
              (cls == CLASS_DEATH_KNIGHT && tab == DEATHKNIGHT_TAB_BLOOD) ||
              (cls == CLASS_SHAMAN && tab == SHAMAN_TAB_ENHANCEMENT && !player_->CanDualWield())))
         {
-            weight_ *= 10;
+            weight_ *= 0.1;
         }
         // fury with titan's grip
-        if (isDoubleHand && proto->SubClass != ITEM_SUBCLASS_WEAPON_POLEARM &&
+        if ((!isDoubleHand || proto->SubClass == ITEM_SUBCLASS_WEAPON_POLEARM || proto->SubClass == ITEM_SUBCLASS_WEAPON_STAFF) &&
             (cls == CLASS_WARRIOR && tab == WARRIOR_TAB_FURY && player_->CanTitanGrip()))
         {
-            weight_ *= 10;
+            weight_ *= 0.1;
         }
     }
     if (proto->Class == ITEM_CLASS_WEAPON)
@@ -481,6 +512,9 @@ void StatsWeightCalculator::CalculateItemTypePenalty(ItemTemplate const* proto)
         {
             weight_ *= 1.1;
         }
+        bool slowDelay = proto->Delay > 2500;
+        if (cls == CLASS_SHAMAN && tab == SHAMAN_TAB_ENHANCEMENT && slowDelay)
+            weight_ *= 1.1;
     }
 }
 
@@ -505,37 +539,57 @@ void StatsWeightCalculator::ApplyOverflowPenalty(Player* player)
 {
     {
         float hit_current, hit_overflow;
-        if (type_ == CollectorType::SPELL)
+        float validPoints;
+        // m_modMeleeHitChance = (float)GetTotalAuraModifier(SPELL_AURA_MOD_HIT_CHANCE);
+        // m_modMeleeHitChance += GetRatingBonusValue(CR_HIT_MELEE);
+        if (hitOverflowType_ == CollectorType::SPELL)
         {
-            hit_current = player->GetRatingBonusValue(CR_HIT_SPELL);
+            hit_current = player->GetTotalAuraModifier(SPELL_AURA_MOD_SPELL_HIT_CHANCE);
+            hit_current += player->GetRatingBonusValue(CR_HIT_SPELL);
             hit_overflow = SPELL_HIT_OVERFLOW;
+            if (hit_overflow > hit_current)
+                validPoints = (hit_overflow - hit_current) / player->GetRatingMultiplier(CR_HIT_SPELL);
+            else
+                validPoints = 0;
         }
-        else if (type_ == CollectorType::MELEE)
+        else if (hitOverflowType_ == CollectorType::MELEE)
         {
-            hit_current = player->GetRatingBonusValue(CR_HIT_MELEE);
+            hit_current = player->GetTotalAuraModifier(SPELL_AURA_MOD_HIT_CHANCE);
+            hit_current += player->GetRatingBonusValue(CR_HIT_MELEE);
             hit_overflow = MELEE_HIT_OVERFLOW;
+            if (hit_overflow > hit_current)
+                validPoints = (hit_overflow - hit_current) / player->GetRatingMultiplier(CR_HIT_MELEE);
+            else
+                validPoints = 0;
         }
         else
         {
-            hit_current = player->GetRatingBonusValue(CR_HIT_RANGED);
+            hit_current = player->GetTotalAuraModifier(SPELL_AURA_MOD_HIT_CHANCE);
+            hit_current += player->GetRatingBonusValue(CR_HIT_RANGED);
             hit_overflow = RANGED_HIT_OVERFLOW;
+            if (hit_overflow > hit_current)
+                validPoints = (hit_overflow - hit_current) / player->GetRatingMultiplier(CR_HIT_RANGED);
+            else
+                validPoints = 0;
         }
-        if (hit_current >= hit_overflow)
-            stats_weights_[STATS_TYPE_HIT] = 0.0f;
-        else if (hit_current >= hit_overflow * 0.8)
-            stats_weights_[STATS_TYPE_HIT] /= 1.5;
+        collector_->stats[STATS_TYPE_HIT] = std::min(collector_->stats[STATS_TYPE_HIT], (int)validPoints);
     }
 
     {
         if (type_ == CollectorType::MELEE)
         {
             float expertise_current, expertise_overflow;
-            expertise_current = player->GetRatingBonusValue(CR_EXPERTISE);
+            expertise_current = player->GetUInt32Value(PLAYER_EXPERTISE);
+            expertise_current += player->GetRatingBonusValue(CR_EXPERTISE);
             expertise_overflow = EXPERTISE_OVERFLOW;
-            if (expertise_current >= expertise_overflow)
-                stats_weights_[STATS_TYPE_EXPERTISE] = 0.0f;
-            else if (expertise_current >= expertise_overflow * 0.8)
-                stats_weights_[STATS_TYPE_EXPERTISE] /= 1.5;
+
+            float validPoints;
+            if (expertise_overflow > expertise_current)
+                validPoints = (expertise_overflow - expertise_current) / player->GetRatingMultiplier(CR_EXPERTISE);
+            else
+                validPoints = 0;
+
+            collector_->stats[STATS_TYPE_EXPERTISE] = std::min(collector_->stats[STATS_TYPE_EXPERTISE], (int)validPoints);
         }
     }
 
@@ -545,10 +599,14 @@ void StatsWeightCalculator::ApplyOverflowPenalty(Player* player)
             float defense_current, defense_overflow;
             defense_current = player->GetRatingBonusValue(CR_DEFENSE_SKILL);
             defense_overflow = DEFENSE_OVERFLOW;
-            if (defense_current >= defense_overflow)
-                stats_weights_[STATS_TYPE_DEFENSE] /= 2;
-            else if (defense_current >= defense_overflow * 0.8)
-                stats_weights_[STATS_TYPE_DEFENSE] /= 1.5;
+
+            float validPoints;
+            if (defense_overflow > defense_current)
+                validPoints = (defense_overflow - defense_current) / player->GetRatingMultiplier(CR_DEFENSE_SKILL);
+            else
+                validPoints = 0;
+
+            collector_->stats[STATS_TYPE_DEFENSE] = std::min(collector_->stats[STATS_TYPE_DEFENSE], (int)validPoints);
         }
     }
 
@@ -558,10 +616,27 @@ void StatsWeightCalculator::ApplyOverflowPenalty(Player* player)
             float armor_penetration_current, armor_penetration_overflow;
             armor_penetration_current = player->GetRatingBonusValue(CR_ARMOR_PENETRATION);
             armor_penetration_overflow = ARMOR_PENETRATION_OVERFLOW;
-            if (armor_penetration_current >= armor_penetration_overflow)
-                stats_weights_[STATS_TYPE_ARMOR_PENETRATION] = 0.0f;
-            if (armor_penetration_current >= armor_penetration_overflow * 0.8)
-                stats_weights_[STATS_TYPE_ARMOR_PENETRATION] /= 1.5;
+
+            float validPoints;
+            if (armor_penetration_overflow > armor_penetration_current)
+                validPoints = (armor_penetration_overflow - armor_penetration_current) / player->GetRatingMultiplier(CR_ARMOR_PENETRATION);
+            else
+                validPoints = 0;
+
+            collector_->stats[STATS_TYPE_ARMOR_PENETRATION] = std::min(collector_->stats[STATS_TYPE_ARMOR_PENETRATION], (int)validPoints);
+        }
+    }
+}
+
+void StatsWeightCalculator::ApplyWeightFinetune(Player* player)
+{
+    {
+        if (type_ == CollectorType::MELEE || type_ == CollectorType::RANGED)
+        {
+            float armor_penetration_current, armor_penetration_overflow;
+            armor_penetration_current = player->GetRatingBonusValue(CR_ARMOR_PENETRATION);
+            if (armor_penetration_current > 50)
+                stats_weights_[STATS_TYPE_ARMOR_PENETRATION] *= 1.2f;
         }
     }
 }

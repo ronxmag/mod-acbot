@@ -370,7 +370,7 @@ void RandomPlayerbotMgr::UpdateAIInternal(uint32 elapsed, bool /*minimal*/)
                 break;
         }
 
-        if (loginBots)
+        if (loginBots && botLoading.empty())
         {
             loginBots += updateBots;
             loginBots = std::min(loginBots, maxNewBots);
@@ -1014,32 +1014,35 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
     if (isLogginIn)
         return false;
 
+    uint32 randomTime;
     if (!player)
     {
         AddPlayerBot(botGUID, 0);
-        SetEventValue(bot, "login", 1, sPlayerbotAIConfig->randomBotUpdateInterval);
+        SetEventValue(bot, "login", 1,
+                      std::max(1, static_cast<int>(sPlayerbotAIConfig->randomBotUpdateInterval * 0.2)));
 
-        uint32 randomTime =
-            urand(sPlayerbotAIConfig->minRandomBotReviveTime, sPlayerbotAIConfig->maxRandomBotReviveTime);
+        randomTime = urand(std::max(5, static_cast<int>(sPlayerbotAIConfig->randomBotUpdateInterval)),
+                                  std::max(15, static_cast<int>(sPlayerbotAIConfig->randomBotUpdateInterval * 2.2)));
         SetEventValue(bot, "update", 1, randomTime);
 
         // do not randomize or teleport immediately after server start (prevent lagging)
         if (!GetEventValue(bot, "randomize"))
         {
-            randomTime = urand(sPlayerbotAIConfig->randomBotUpdateInterval * 5,
-                               sPlayerbotAIConfig->randomBotUpdateInterval * 20);
-            ScheduleRandomize(bot, randomTime);
+            ScheduleRandomize(bot, std::max(3, static_cast<int>(sPlayerbotAIConfig->randomBotUpdateInterval * 0.5)));
         }
         if (!GetEventValue(bot, "teleport"))
         {
-            randomTime = urand(sPlayerbotAIConfig->randomBotUpdateInterval * 5,
-                               sPlayerbotAIConfig->randomBotUpdateInterval * 20);
+            randomTime = urand(std::max(7, static_cast<int>(sPlayerbotAIConfig->randomBotUpdateInterval * 0.8)),
+                               std::max(14, static_cast<int>(sPlayerbotAIConfig->randomBotUpdateInterval * 2)));
             ScheduleTeleport(bot, randomTime);
         }
         return true;
     }
 
     SetEventValue(bot, "login", 0, 0);
+
+    if (!player->IsInWorld())
+        return false;
 
     if (player->GetGroup() || player->HasUnitState(UNIT_STATE_IN_FLIGHT))
         return false;
@@ -1073,8 +1076,9 @@ bool RandomPlayerbotMgr::ProcessBot(uint32 bot)
         if (update)
             ProcessBot(player);
 
-        uint32 randomTime =
-            urand(sPlayerbotAIConfig->minRandomBotReviveTime, sPlayerbotAIConfig->maxRandomBotReviveTime);
+        randomTime = urand(
+            sPlayerbotAIConfig->minRandomBotReviveTime,
+            sPlayerbotAIConfig->maxRandomBotReviveTime);
         SetEventValue(bot, "update", 1, randomTime);
 
         return true;
@@ -1864,6 +1868,7 @@ void RandomPlayerbotMgr::GetBots()
         PlayerbotsDatabase.GetPreparedStatement(PLAYERBOTS_SEL_RANDOM_BOTS_BY_OWNER_AND_EVENT);
     stmt->SetData(0, 0);
     stmt->SetData(1, "add");
+    uint32 maxAllowedBotCount = GetEventValue(0, "bot_count");
     if (PreparedQueryResult result = PlayerbotsDatabase.Query(stmt))
     {
         do
@@ -1872,6 +1877,9 @@ void RandomPlayerbotMgr::GetBots()
             uint32 bot = fields[0].Get<uint32>();
             if (GetEventValue(bot, "add"))
                 currentBots.push_back(bot);
+
+            if (currentBots.size() >= maxAllowedBotCount)
+                break;
         } while (result->NextRow());
     }
 }
@@ -2399,53 +2407,14 @@ void RandomPlayerbotMgr::PrintStats()
             ++engine_combat;
         else
             ++engine_dead;
-
-        uint8 spec = AiFactory::GetPlayerSpecTab(bot);
-        switch (bot->getClass())
-        {
-            case CLASS_DRUID:
-                if (spec == 2)
-                    ++heal;
-                else
-                    ++dps;
-                break;
-            case CLASS_PALADIN:
-                if (spec == 1)
-                    ++tank;
-                else if (spec == 0)
-                    ++heal;
-                else
-                    ++dps;
-                break;
-            case CLASS_PRIEST:
-                if (spec != 2)
-                    ++heal;
-                else
-                    ++dps;
-                break;
-            case CLASS_SHAMAN:
-                if (spec == 2)
-                    ++heal;
-                else
-                    ++dps;
-                break;
-            case CLASS_WARRIOR:
-                if (spec == 2)
-                    ++tank;
-                else
-                    ++dps;
-                break;
-            case CLASS_DEATH_KNIGHT:
-                if (spec == 0)
-                    tank++;
-                else
-                    dps++;
-                break;
-            default:
-                ++dps;
-                break;
-        }
-
+        
+        if (botAI->IsHeal(bot, true))
+            ++heal;
+        else if (botAI->IsTank(bot, true))
+            ++tank;
+        else
+            ++dps;
+        
         if (TravelTarget* target = botAI->GetAiObjectContext()->GetValue<TravelTarget*>("travel target")->Get())
         {
             TravelState state = target->getTravelState();
